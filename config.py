@@ -77,7 +77,8 @@ TimeZone of the site and the computer
 _local_timezone     = +1
 # The computer timezone.
 # magnitude = read_magnitude + offset
-_offset_calibration = -0.11
+_offset_calibration  = -0.11
+_plot_corrected_data = True 
 # Reboot if we loose connection
 _reboot_on_connlost = False
 

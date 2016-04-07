@@ -235,7 +235,7 @@ class SQMData(object):
 
             # Check that datetimes are corrent
             calc_localdatetime = utcdatetime+timedelta(hours=config._local_timezone)
-            assert(calc_localdatetime == localdatetime)
+            if (calc_localdatetime != localdatetime): return 1
 
             # Set the datetime for astronomical calculations.
             Ephem.Observatory.date = ephem.date(utcdatetime)
@@ -251,6 +251,10 @@ class SQMData(object):
             frequency   = float(line[4])
             # Night sky background
             night_sb    = float(line[5])
+            try: config._plot_corrected_nsb
+            except NameError: config._plot_corrected_nsb=False
+            if (config._plot_corrected_nsb):
+                night_sb += _plot_corrected_nsb*_offset_calibration
             # Define sun in pyephem
             Sun = ephem.Sun(Ephem.Observatory)
 
@@ -366,11 +370,12 @@ class Plot(object):
         plt.hold(True)
         Data = self.prepare_plot(Data,Ephem)
         
-        try:
-            assert(config.full_plot is True)
+        try: config.full_plot
+        except: config.full_plot = False
+        if (config.full_plot)
             self.make_figure(thegraph_altsun=True,thegraph_time=True)
             self.plot_data_sunalt(Data,Ephem)
-        except:
+        else:
             self.make_figure(thegraph_altsun=False,thegraph_time=True)
 
         self.plot_data_time(Data,Ephem)
@@ -518,10 +523,9 @@ class Plot(object):
         is used
         '''
 
-        try:
-            assert(np.size(Data.Night)==1)
-        except:
-            print('Warning, more than 1 night in the data file. Please check it! %d' %np.size(Data.Night))
+        if(len(Data.Night)!=1)
+            print('Warning, more than 1 night in the data file. '+\
+                  'Please check it! %d' %np.size(Data.Night))
 
         # Mean datetime
         dts       = Data.all_night_dt
